@@ -10,7 +10,8 @@ alwaysApply: true
 - Só marque PASS após validação observável do resultado esperado.
 - Preserve URL, timestamp, cenário, passo e referência de cada evidência.
 - Redija Authorization, Cookie, Set-Cookie, tokens, senhas e dados sensíveis.
-- Não grave credenciais em arquivos, relatórios, screenshots ou mensagens.
+- Não grave credenciais em estado, relatório, screenshot ou mensagem. A única
+  exceção é o `.env.qa` local e ignorado pelo Git, preenchido pelo usuário.
 - Prefira sessão autenticada preparada pelo usuário ou login manual.
 - Não faça delete, pagamento, publicação, cancelamento, upload ou alteração
   irreversível sem autorização explícita para a ação e para os dados.

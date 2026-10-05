@@ -41,6 +41,8 @@ configuração não secreta:
 QA_TARGET_ENV=local | homolog | production
 QA_APP_BASE_URL_<AMBIENTE>=...
 QA_API_BASE_URL_<AMBIENTE>=...
+QA_TEST_EMAIL_<AMBIENTE>=...
+QA_TEST_PASSWORD_<AMBIENTE>=...
 QA_ALLOW_PRODUCTION=false
 QA_ALLOW_API_WRITES=false
 QA_API_TOKEN_ENV=NOME_DA_VARIAVEL_DO_SISTEMA
@@ -54,6 +56,12 @@ arquivo deve ser confirmada; não faça fallback silencioso entre ambientes.
 `QA_ALLOW_PRODUCTION=true`. Operações API diferentes de GET/HEAD/OPTIONS também
 exigem `QA_ALLOW_API_WRITES=true` e aprovação específica no pedido. O nome em
 `QA_API_TOKEN_ENV` é uma referência; nunca leia ou persista o valor no estado.
+
+Para login web, selecione email e senha pelo mesmo sufixo do ambiente. Não use
+credencial de outro ambiente como fallback. O QA Master registra somente os
+nomes das chaves; o `playwright-executor` lê os valores no momento do login e
+nunca os retorna. Chave vazia, MFA ou captcha requer login manual e `BLOCKED`
+até a intervenção.
 
 ## Envelope de entrada
 
@@ -90,7 +98,10 @@ O QA Master deve passar a cada subagent somente o contexto necessário:
       "source": ".env.qa",
       "allow_production": false,
       "allow_api_writes": false,
-      "api_token_env": "QA_API_TOKEN_HOMOLOG"
+      "api_token_env": "QA_API_TOKEN_HOMOLOG",
+      "credential_mode": "env",
+      "email_key": "QA_TEST_EMAIL_HOMOLOG",
+      "password_key": "QA_TEST_PASSWORD_HOMOLOG"
     },
     "profile": "...",
     "documentation": [],
@@ -111,8 +122,9 @@ O QA Master deve passar a cada subagent somente o contexto necessário:
 No task canônico, use `REQUIREMENT NOT DEFINED` somente quando o contrato do
 subagent exigir string; não suponha o valor.
 
-Não inclua valores de credenciais. Informe somente o método autorizado:
-`existing-session`, `manual-login` ou `not-available`.
+Não inclua valores de credenciais no envelope. Informe somente o método
+autorizado: `existing-session`, `manual-login`, `env` ou `not-available`, mais
+os nomes das chaves quando o método for `env`.
 
 ## Envelope de saída
 

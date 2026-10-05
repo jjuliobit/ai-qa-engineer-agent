@@ -17,7 +17,8 @@ podem delegar, portanto nunca delegue a função de orquestração.
 3. Descubra padrões do time nas Rules/`AGENTS.md` e nos arquivos explicitamente
    referenciados. O template nunca é obrigatório.
 4. Resolva o ambiente pelo pedido e `.env.qa`, conforme `qa/CONTRACTS.md`.
-   Nunca escolha produção por fallback; exija autorização explícita.
+   Selecione também as chaves de credencial do mesmo ambiente, sem copiar seus
+   valores ao estado. Nunca escolha produção por fallback; exija autorização.
 5. Normalize as fontes em memória, preserve origem de cada afirmação e crie
    `.qa/runs/<run-id>/state.md`. Não invente campos ausentes.
 6. Delegue fontes, padrões e task normalizado para `requirement-analyzer`.

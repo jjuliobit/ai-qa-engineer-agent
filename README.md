@@ -77,6 +77,12 @@ QA_APP_BASE_URL_HOMOLOG=https://homolog.example.com
 QA_API_BASE_URL_HOMOLOG=https://api-homolog.example.com
 QA_APP_BASE_URL_PRODUCTION=https://www.example.com
 QA_API_BASE_URL_PRODUCTION=https://api.example.com
+QA_TEST_EMAIL_LOCAL=
+QA_TEST_PASSWORD_LOCAL=
+QA_TEST_EMAIL_HOMOLOG=
+QA_TEST_PASSWORD_HOMOLOG=
+QA_TEST_EMAIL_PRODUCTION=
+QA_TEST_PASSWORD_PRODUCTION=
 QA_ALLOW_PRODUCTION=false
 QA_ALLOW_API_WRITES=false
 QA_API_TOKEN_ENV=QA_API_TOKEN_HOMOLOG
@@ -191,14 +197,19 @@ trabalho duplicado.
 
 ## Credenciais
 
-Não coloque senha, token ou cookie no task, Git ou relatório. Prefira:
+Não coloque senha, token ou cookie no task, Git ou relatório. Há três modos:
 
 1. sessão já autenticada no browser controlado pelo MCP;
 2. login manual quando o QA Master pausar e solicitar;
-3. storage state local configurado pelo usuário fora do repositório, quando
-   suportado pela configuração do Playwright MCP.
+3. email e senha por ambiente no `.env.qa`.
 
-O sistema nunca deve repetir ou persistir o segredo recebido.
+O `.env.qa` já foi criado e está ignorado pelo Git. Preencha somente as chaves
+do ambiente usado. O executor não usa credenciais de outro ambiente como
+fallback e não deve copiá-las para estado, relatório ou evidências.
+
+Limitação: no modo env, Cursor e Playwright precisam consumir a credencial para
+preencher o formulário; ela pode passar pelo contexto da ferramenta. Para
+produção, MFA ou contas sensíveis, prefira sessão autenticada ou login manual.
 
 ## Segurança operacional
 

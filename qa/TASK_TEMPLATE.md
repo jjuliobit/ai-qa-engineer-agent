@@ -42,6 +42,7 @@ Escolha um método, sem gravar credenciais neste arquivo:
 
 - [ ] Existing authenticated browser session
 - [ ] Manual login by the user when requested
+- [ ] Environment credentials from `.env.qa`
 - [ ] Authentication not required
 
 ## Safety

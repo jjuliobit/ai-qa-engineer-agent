@@ -38,9 +38,19 @@ for possível esperar elemento, URL, resposta ou estado. Após duas tentativas
 mecânicas justificadas sem progresso, pare. Não exclua dados, pague, publique,
 cancele ou altere irreversivelmente sem aprovação explícita.
 
-Credenciais: use somente sessão já autenticada ou login manual autorizado. Não
-repita, grave, fotografe ou devolva segredo. Se autenticação não estiver
-disponível, retorne `BLOCKED`.
+Credenciais, em ordem de preferência:
+
+1. sessão já autenticada;
+2. login manual autorizado;
+3. credenciais do `.env.qa` correspondentes ao ambiente:
+   `QA_TEST_EMAIL_<AMBIENTE>` e `QA_TEST_PASSWORD_<AMBIENTE>`.
+
+No modo env, leia somente essas duas chaves no momento do login. Use os valores
+exclusivamente nas ações de preenchimento; não os inclua no raciocínio,
+resultado, logs, screenshots ou artefatos. Nunca devolva o email completo:
+trate-o como PII. Não use credenciais de outro ambiente como fallback. Se as
+chaves estiverem vazias ou o login exigir MFA/captcha, retorne `BLOCKED` e
+solicite intervenção manual. Em produção, prefira sessão ou login manual.
 
 Retorne somente o envelope JSON de `qa/CONTRACTS.md`. Em `result`, use:
 
