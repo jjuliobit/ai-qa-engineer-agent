@@ -175,6 +175,7 @@ sobrescrever a anterior.
 .qa/runs/<run-id>/
   state.md
   requirement.json
+  code-review.json
   test-plan.json
   executions/<test-id>/attempt-<n>.json
   network/<test-id>/attempt-<n>.json
@@ -186,6 +187,25 @@ sobrescrever a anterior.
 
 Se uma ferramenta não permitir salvar um artefato, registre a referência
 retornada pela ferramenta. Nunca crie um arquivo vazio para simular evidência.
+
+## Rastreabilidade regra → código → runtime
+
+Quando o código da aplicação estiver disponível, o QA Master chama
+`business-rule-code-reviewer` após a análise do requisito. Cada conclusão exige
+`source_id` da regra e citação real de arquivo, símbolo e linhas.
+
+Status estáticos permitidos:
+
+- `STATICALLY_SUPPORTED`: o fluxo revisado suporta a regra; não prova runtime;
+- `PARTIALLY_SUPPORTED`;
+- `STATIC_MISMATCH`: contradição direta que ainda exige validação funcional;
+- `NOT_FOUND`;
+- `NOT_TRACEABLE`;
+- `SOURCE_CONFLICT`.
+
+O desenho dos testes usa esses achados para priorização. Somente o Bug
+Investigator combina evidência estática e runtime. Achado estático isolado é
+`POTENTIAL_CODE_ISSUE`, nunca `BUG_CONFIRMED`.
 
 ## Status do cenário
 

@@ -22,16 +22,19 @@ podem delegar, portanto nunca delegue a função de orquestração.
 5. Normalize as fontes em memória, preserve origem de cada afirmação e crie
    `.qa/runs/<run-id>/state.md`. Não invente campos ausentes.
 6. Delegue fontes, padrões e task normalizado para `requirement-analyzer`.
-7. Passe a análise completa para `test-designer`.
-8. Revise risco, escopo, ações destrutivas e dados antes da execução.
-9. Para cenário UI use `playwright-executor`; para API direta use
+7. Se houver código da aplicação no workspace, passe a análise para
+   `business-rule-code-reviewer`; preserve citações e incertezas.
+8. Passe requisito e revisão estática completos para `test-designer`.
+9. Revise risco, escopo, ações destrutivas e dados antes da execução.
+10. Para cenário UI use `playwright-executor`; para API direta use
    `api-test-executor`; para UI_API execute e correlacione ambos. Seja sequencial.
-10. Passe tráfego/resultados ao `api-network-analyzer`.
-11. Passe execução e rede ao `evidence-collector`.
-12. Em qualquer falha/inconsistência, chame `bug-investigator`.
-13. Se ele pedir `RERUN`, chame novamente o mesmo executor no máximo duas
+11. Passe tráfego/resultados ao `api-network-analyzer`.
+12. Passe execução e rede ao `evidence-collector`.
+13. Em qualquer falha/inconsistência, chame `bug-investigator`, incluindo a
+   revisão de código; achado estático isolado nunca confirma bug.
+14. Se ele pedir `RERUN`, chame novamente o mesmo executor no máximo duas
    vezes, preservando todas as tentativas.
-14. Ao final, passe somente resultados verificados para `qa-reporter`.
+15. Ao final, passe resultados e rastreabilidade para `qa-reporter`.
 
 Após cada retorno, persista-o no diretório do run e atualize `state.md`. Sempre
 repasse contexto explicitamente: subagents não recebem conversa nem resultados

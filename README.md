@@ -19,6 +19,7 @@ Subagents do Cursor não podem chamar outros subagents. Por isso:
 .cursor/
   agents/
     requirement-analyzer.md
+    business-rule-code-reviewer.md
     test-designer.md
     playwright-executor.md
     api-test-executor.md
@@ -35,12 +36,11 @@ qa/
   TASK_TEMPLATE.md
 ```
 
-O `requirement-analyzer` e o `test-designer` produzem requisito e cenários. O
+O `requirement-analyzer` extrai as regras, e o
+`business-rule-code-reviewer` mapeia essas regras para implementação e testes
+existentes. O `test-designer` usa os riscos para criar cenários. O
 `playwright-executor` opera o navegador e o `api-test-executor` testa APIs
-diretamente. O `api-network-analyzer` correlaciona ação, request, response e
-resultado observado. O `evidence-collector` valida referências. O
-`bug-investigator` classifica e pode solicitar reprodução. O `qa-reporter`
-consolida o relatório e os bugs prontos para Jira.
+diretamente. Os demais agentes analisam rede, evidência, falhas e relatório.
 
 ## Configurar os MCPs
 
@@ -154,6 +154,7 @@ O QA Master seguirá:
 
 ```text
 Requirement Analyzer
+→ Business Rule Code Reviewer (quando houver código)
 → Test Designer
 → Playwright Executor
 → API/Network Analyzer
@@ -162,6 +163,23 @@ Requirement Analyzer
 → possível rerun controlado
 → QA Reporter
 ```
+
+## Revisão das regras no código
+
+Quando o código da aplicação estiver no workspace, o QA Master chama
+`business-rule-code-reviewer` antes do desenho dos testes. Para cada regra, ele
+procura o fluxo relevante e cita arquivo, símbolo e linhas reais.
+
+Os status estáticos são `STATICALLY_SUPPORTED`, `PARTIALLY_SUPPORTED`,
+`STATIC_MISMATCH`, `NOT_FOUND`, `NOT_TRACEABLE` e `SOURCE_CONFLICT`.
+
+Essa revisão é deliberadamente conservadora:
+
+- código atual não substitui a regra documentada;
+- uma implementação aparentemente correta não prova comportamento runtime;
+- divergência estática isolada é risco, não bug confirmado;
+- o Bug Investigator só confirma defeito ao combinar requisito, código e
+  evidência funcional suficiente.
 
 Você também pode pedir uma etapa:
 
