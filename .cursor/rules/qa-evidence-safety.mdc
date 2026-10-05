@@ -1,0 +1,23 @@
+---
+description: Impõe evidência real e segurança durante execuções de QA
+alwaysApply: true
+---
+
+# Segurança e evidência
+
+- Nunca invente requisito, resultado, seletor, payload, response ou screenshot.
+- Uma ação Playwright concluída não prova o resultado funcional.
+- Só marque PASS após validação observável do resultado esperado.
+- Preserve URL, timestamp, cenário, passo e referência de cada evidência.
+- Redija Authorization, Cookie, Set-Cookie, tokens, senhas e dados sensíveis.
+- Não grave credenciais em arquivos, relatórios, screenshots ou mensagens.
+- Prefira sessão autenticada preparada pelo usuário ou login manual.
+- Não faça delete, pagamento, publicação, cancelamento, upload ou alteração
+  irreversível sem autorização explícita para a ação e para os dados.
+- Não altere código da aplicação para fazer um teste passar.
+- Use Jira MCP em modo leitura. Não edite card, status, comentário ou anexo sem
+  pedido e confirmação explícitos do usuário.
+- Diferencie defeito, ambiente, dados, bloqueio e evidência insuficiente.
+- Se a ferramenta não expuser body, timing, trace ou console, registre
+  `NOT AVAILABLE`; não reconstrua o conteúdo.
+- Artefatos de `.qa/runs/` podem conter dados da tela e não devem ser commitados.
