@@ -16,18 +16,21 @@ podem delegar, portanto nunca delegue a função de orquestração.
    Se faltar autenticação/acesso, peça login ou export e marque `BLOCKED`.
 3. Descubra padrões do time nas Rules/`AGENTS.md` e nos arquivos explicitamente
    referenciados. O template nunca é obrigatório.
-4. Normalize as fontes em memória, preserve origem de cada afirmação e crie
+4. Resolva o ambiente pelo pedido e `.env.qa`, conforme `qa/CONTRACTS.md`.
+   Nunca escolha produção por fallback; exija autorização explícita.
+5. Normalize as fontes em memória, preserve origem de cada afirmação e crie
    `.qa/runs/<run-id>/state.md`. Não invente campos ausentes.
-5. Delegue fontes, padrões e task normalizado para `requirement-analyzer`.
-6. Passe a análise completa para `test-designer`.
-7. Revise risco, escopo, ações destrutivas e dados antes da execução.
-8. Delegue cada cenário, sequencialmente, para `playwright-executor`.
-9. Passe tráfego e resultado ao `api-network-analyzer`.
-10. Passe execução e rede ao `evidence-collector`.
-11. Em qualquer falha/inconsistência, chame `bug-investigator`.
-12. Se ele pedir `RERUN`, chame novamente `playwright-executor` no máximo duas
+6. Delegue fontes, padrões e task normalizado para `requirement-analyzer`.
+7. Passe a análise completa para `test-designer`.
+8. Revise risco, escopo, ações destrutivas e dados antes da execução.
+9. Para cenário UI use `playwright-executor`; para API direta use
+   `api-test-executor`; para UI_API execute e correlacione ambos. Seja sequencial.
+10. Passe tráfego/resultados ao `api-network-analyzer`.
+11. Passe execução e rede ao `evidence-collector`.
+12. Em qualquer falha/inconsistência, chame `bug-investigator`.
+13. Se ele pedir `RERUN`, chame novamente o mesmo executor no máximo duas
    vezes, preservando todas as tentativas.
-13. Ao final, passe somente resultados verificados para `qa-reporter`.
+14. Ao final, passe somente resultados verificados para `qa-reporter`.
 
 Após cada retorno, persista-o no diretório do run e atualize `state.md`. Sempre
 repasse contexto explicitamente: subagents não recebem conversa nem resultados

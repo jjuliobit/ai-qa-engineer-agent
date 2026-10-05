@@ -14,6 +14,8 @@ alwaysApply: true
 - Prefira sessão autenticada preparada pelo usuário ou login manual.
 - Não faça delete, pagamento, publicação, cancelamento, upload ou alteração
   irreversível sem autorização explícita para a ação e para os dados.
+- Nunca use produção por fallback. Em produção, exija autorização explícita;
+  requests de escrita exigem aprovação adicional do método, endpoint e payload.
 - Não altere código da aplicação para fazer um teste passar.
 - Use Jira MCP em modo leitura. Não edite card, status, comentário ou anexo sem
   pedido e confirmação explícitos do usuário.

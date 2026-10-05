@@ -10,7 +10,7 @@ Subagents do Cursor não podem chamar outros subagents. Por isso:
 
 - o Agent principal do chat atua como **QA Master**;
 - `.cursor/rules/qa-master.mdc` define o fluxo de orquestração;
-- os sete especialistas ficam em `.cursor/agents/*.md`;
+- os especialistas ficam em `.cursor/agents/*.md`;
 - o QA Master recebe os retornos, persiste o estado e repassa contexto.
 
 ## Componentes
@@ -21,6 +21,7 @@ Subagents do Cursor não podem chamar outros subagents. Por isso:
     requirement-analyzer.md
     test-designer.md
     playwright-executor.md
+    api-test-executor.md
     api-network-analyzer.md
     evidence-collector.md
     bug-investigator.md
@@ -35,8 +36,9 @@ qa/
 ```
 
 O `requirement-analyzer` e o `test-designer` produzem requisito e cenários. O
-`playwright-executor` opera o navegador. O `api-network-analyzer` correlaciona
-ação, request, response e UI. O `evidence-collector` valida referências. O
+`playwright-executor` opera o navegador e o `api-test-executor` testa APIs
+diretamente. O `api-network-analyzer` correlaciona ação, request, response e
+resultado observado. O `evidence-collector` valida referências. O
 `bug-investigator` classifica e pode solicitar reprodução. O `qa-reporter`
 consolida o relatório e os bugs prontos para Jira.
 
@@ -63,6 +65,30 @@ Os recursos exatos de network body, trace, vídeo e download dependem da versão
 do Playwright MCP. Quando algo não estiver disponível, os agents registram
 `NOT AVAILABLE`.
 
+## Ambientes local, homologação e produção
+
+Copie `.env.qa.example` para `.env.qa` e preencha as URLs:
+
+```text
+QA_TARGET_ENV=homolog
+QA_APP_BASE_URL_LOCAL=http://localhost:3000
+QA_API_BASE_URL_LOCAL=http://localhost:8080
+QA_APP_BASE_URL_HOMOLOG=https://homolog.example.com
+QA_API_BASE_URL_HOMOLOG=https://api-homolog.example.com
+QA_APP_BASE_URL_PRODUCTION=https://www.example.com
+QA_API_BASE_URL_PRODUCTION=https://api.example.com
+QA_ALLOW_PRODUCTION=false
+QA_ALLOW_API_WRITES=false
+QA_API_TOKEN_ENV=QA_API_TOKEN_HOMOLOG
+```
+
+`.env.qa` não é versionado. `QA_API_TOKEN_ENV` contém apenas o nome da variável
+de ambiente do sistema; o token real não deve ficar no arquivo.
+
+O ambiente escrito no pedido substitui `QA_TARGET_ENV`. Não existe fallback
+automático para produção. Produção e requests de escrita exigem autorizações
+separadas.
+
 ## Uso
 
 O `qa/TASK_TEMPLATE.md` é opcional. Você pode fornecer diretamente:
@@ -84,6 +110,14 @@ URL: https://...
 Ao reconhecer `NEX-123`, o QA Master consulta o Jira pelo MCP `atlassian` antes
 de chamar o Requirement Analyzer. Se OAuth, site ou permissão estiverem
 indisponíveis, ele solicita autenticação/export em vez de inventar o conteúdo.
+
+Para teste direto de API:
+
+```text
+Teste a API do card NEX-123 em homolog.
+Use a base URL configurada em .env.qa.
+Não execute operações de escrita.
+```
 
 Exemplo com arquivo:
 

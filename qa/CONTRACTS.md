@@ -32,6 +32,29 @@ Quando fontes conflitarem, aplique uma precedência somente se ela estiver
 definida nos padrões do time ou pelo usuário. Caso contrário, registre a
 contradição e use `CLARIFY` se ela alterar o teste esperado.
 
+## Resolução de ambiente
+
+O arquivo `.env.qa` é opcional e deve seguir `.env.qa.example`. Ele contém
+configuração não secreta:
+
+```text
+QA_TARGET_ENV=local | homolog | production
+QA_APP_BASE_URL_<AMBIENTE>=...
+QA_API_BASE_URL_<AMBIENTE>=...
+QA_ALLOW_PRODUCTION=false
+QA_ALLOW_API_WRITES=false
+QA_API_TOKEN_ENV=NOME_DA_VARIAVEL_DO_SISTEMA
+```
+
+O ambiente informado no pedido tem precedência sobre `QA_TARGET_ENV`. Depois,
+selecione as URLs com o sufixo correspondente. URL explícita que divergir do
+arquivo deve ser confirmada; não faça fallback silencioso entre ambientes.
+
+`production` exige ambiente explicitamente pedido e
+`QA_ALLOW_PRODUCTION=true`. Operações API diferentes de GET/HEAD/OPTIONS também
+exigem `QA_ALLOW_API_WRITES=true` e aprovação específica no pedido. O nome em
+`QA_API_TOKEN_ENV` é uma referência; nunca leia ou persista o valor no estado.
+
 ## Envelope de entrada
 
 O QA Master deve passar a cada subagent somente o contexto necessário:
@@ -60,6 +83,15 @@ O QA Master deve passar a cada subagent somente o contexto necessário:
     "requirement": "...",
     "url": "https://...",
     "environment": "Homolog",
+    "environment_config": {
+      "name": "homolog",
+      "app_base_url": "https://...",
+      "api_base_url": "https://api...",
+      "source": ".env.qa",
+      "allow_production": false,
+      "allow_api_writes": false,
+      "api_token_env": "QA_API_TOKEN_HOMOLOG"
+    },
     "profile": "...",
     "documentation": [],
     "business_rules": [],

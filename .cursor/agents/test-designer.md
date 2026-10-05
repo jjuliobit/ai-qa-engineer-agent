@@ -35,10 +35,16 @@ Retorne somente o envelope JSON de `qa/CONTRACTS.md`. Em `result`, use:
       "test_id": "TC-001",
       "title": "...",
       "category": "HAPPY_PATH | NEGATIVE | BOUNDARY | INTEGRATION",
+      "execution_type": "UI | API | UI_API",
       "priority": "CRITICAL | HIGH | MEDIUM | LOW",
       "risk": "...",
       "preconditions": [],
       "test_data": {},
+      "api": {
+        "method": "método definido ou REQUIREMENT NOT DEFINED",
+        "path": "path definido ou REQUIREMENT NOT DEFINED",
+        "contract_source": "source_id ou REQUIREMENT NOT DEFINED"
+      },
       "steps": ["ação humana observável"],
       "expected_result": "...",
       "validation_points": ["UI", "URL", "network", "console"],
@@ -55,4 +61,5 @@ Retorne somente o envelope JSON de `qa/CONTRACTS.md`. Em `result`, use:
 ```
 
 Passos descrevem intenção, não seletores inventados. O executor descobrirá os
-elementos reais por snapshot de acessibilidade.
+elementos reais por snapshot de acessibilidade. Para API, não invente método ou
+path; omita `api` em cenários somente UI.

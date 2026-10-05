@@ -10,8 +10,9 @@ ou Rule do time como fonte e o QA Master aplicará esse padrão na normalizaçã
 ## Identification
 
 - Jira:
-- Environment:
-- URL:
+- Environment: local | homolog | production
+- Web URL: opcional se configurada em `.env.qa`
+- API URL: opcional se configurada em `.env.qa`
 - Module:
 - Feature:
 - User profile:
