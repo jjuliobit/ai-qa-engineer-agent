@@ -63,6 +63,7 @@ Escolha um método, sem gravar credenciais neste arquivo:
 - [ ] Bug investigation/reproduction
 - [ ] Final QA report
 - [ ] Jira-ready bug report
+- [ ] Generate Playwright automation (TypeScript/@playwright/test only)
 
 ## Execution notes
 

@@ -181,6 +181,7 @@ sobrescrever a anterior.
   network/<test-id>/attempt-<n>.json
   evidence/index.json
   screenshots/
+  automation/automation-result.json
   report.md
   jira-bugs.md
 ```
@@ -206,6 +207,17 @@ Status estáticos permitidos:
 O desenho dos testes usa esses achados para priorização. Somente o Bug
 Investigator combina evidência estática e runtime. Achado estático isolado é
 `POTENTIAL_CODE_ISSUE`, nunca `BUG_CONFIRMED`.
+
+## Geração de automação
+
+Automação não faz parte automática de todo run. Somente quando o usuário pedir,
+o QA Master chama `playwright-typescript-automation-engineer` com requisito,
+cenário, resultado e seletores/evidências observados.
+
+Todo código Playwright gerado deve usar TypeScript e `@playwright/test`, com
+arquivos `*.spec.ts`. Não gere Python, não hardcode URLs ou credenciais e não
+invente seletores. Cenário não executado permanece `NOT_RUN`; criação do arquivo
+não prova PASS.
 
 ## Status do cenário
 

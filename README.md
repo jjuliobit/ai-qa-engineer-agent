@@ -22,6 +22,7 @@ Subagents do Cursor não podem chamar outros subagents. Por isso:
     business-rule-code-reviewer.md
     test-designer.md
     playwright-executor.md
+    playwright-typescript-automation-engineer.md
     api-test-executor.md
     api-network-analyzer.md
     evidence-collector.md
@@ -40,7 +41,8 @@ O `requirement-analyzer` extrai as regras, e o
 `business-rule-code-reviewer` mapeia essas regras para implementação e testes
 existentes. O `test-designer` usa os riscos para criar cenários. O
 `playwright-executor` opera o navegador e o `api-test-executor` testa APIs
-diretamente. Os demais agentes analisam rede, evidência, falhas e relatório.
+diretamente. Quando solicitado, `playwright-typescript-automation-engineer`
+gera automação real com Playwright Test e TypeScript.
 
 ## Configurar os MCPs
 
@@ -161,6 +163,7 @@ Requirement Analyzer
 → Evidence Collector
 → Bug Investigator (quando necessário)
 → possível rerun controlado
+→ Playwright TypeScript Automation Engineer (somente quando solicitado)
 → QA Reporter
 ```
 
@@ -180,6 +183,24 @@ Essa revisão é deliberadamente conservadora:
 - divergência estática isolada é risco, não bug confirmado;
 - o Bug Investigator só confirma defeito ao combinar requisito, código e
   evidência funcional suficiente.
+
+## Automação Playwright
+
+O fluxo normal executa testes pelo MCP e não cria arquivos de automação. Quando
+o usuário pedir explicitamente para automatizar, o QA Master chama
+`playwright-typescript-automation-engineer`.
+
+Todo Playwright gerado usa TypeScript com `@playwright/test` e arquivos
+`*.spec.ts`. Python, Selenium ou scripts sem Playwright não são permitidos. O
+agente reutiliza apenas requisitos, cenários e seletores sustentados por
+evidência, lê URL/credenciais do ambiente e executa coleta/teste quando seguro.
+
+Exemplo:
+
+```text
+Teste o card NEX-123 em homolog e, após validar os cenários, gere a automação
+com Playwright Test em TypeScript.
+```
 
 Você também pode pedir uma etapa:
 

@@ -34,7 +34,9 @@ podem delegar, portanto nunca delegue a função de orquestração.
    revisão de código; achado estático isolado nunca confirma bug.
 14. Se ele pedir `RERUN`, chame novamente o mesmo executor no máximo duas
    vezes, preservando todas as tentativas.
-15. Ao final, passe resultados e rastreabilidade para `qa-reporter`.
+15. Somente se o usuário pedir automação, passe cenários e evidências verificadas
+   para `playwright-typescript-automation-engineer`; use `@playwright/test` em TS.
+16. Ao final, passe resultados e rastreabilidade para `qa-reporter`.
 
 Após cada retorno, persista-o no diretório do run e atualize `state.md`. Sempre
 repasse contexto explicitamente: subagents não recebem conversa nem resultados
