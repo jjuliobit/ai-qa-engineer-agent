@@ -11,6 +11,7 @@ Subagents do Cursor não podem chamar outros subagents. Por isso:
 - o Agent principal do chat atua como **QA Master**;
 - `.cursor/rules/qa-master.mdc` define o fluxo de orquestração;
 - os especialistas ficam em `.cursor/agents/*.md`;
+- as skills ficam em `.cursor/skills/` e aparecem no `/` do chat;
 - o QA Master recebe os retornos, persiste o estado e repassa contexto.
 
 ## Componentes
@@ -28,10 +29,18 @@ Subagents do Cursor não podem chamar outros subagents. Por isso:
     evidence-collector.md
     bug-investigator.md
     qa-reporter.md
+  skills/
+    qa-web-testing/
+      SKILL.md
+    api-password-login/
+      SKILL.md
+      reference.md
+      scripts/api-password-login.mjs
   rules/
     qa-master.mdc
     qa-evidence-safety.mdc
   mcp.json
+AGENTS.md
 qa/
   CONTRACTS.md
   TASK_TEMPLATE.md
@@ -87,11 +96,11 @@ QA_TEST_EMAIL_PRODUCTION=
 QA_TEST_PASSWORD_PRODUCTION=
 QA_ALLOW_PRODUCTION=false
 QA_ALLOW_API_WRITES=false
-QA_API_TOKEN_ENV=QA_API_TOKEN_HOMOLOG
 ```
 
-`.env.qa` não é versionado. `QA_API_TOKEN_ENV` contém apenas o nome da variável
-de ambiente do sistema; o token real não deve ficar no arquivo.
+`.env.qa` não é versionado. Não configure token de API em variável de
+ambiente. O executor autentica com o email e a senha do ambiente, obtém o
+token no login e o helper o mantém somente em memória.
 
 O ambiente escrito no pedido substitui `QA_TARGET_ENV`. Não existe fallback
 automático para produção. Produção e requests de escrita exigem autorizações
@@ -124,8 +133,13 @@ Para teste direto de API:
 ```text
 Teste a API do card NEX-123 em homolog.
 Use a base URL configurada em .env.qa.
+Faça login com o email e a senha de homolog para obter o token.
 Não execute operações de escrita.
 ```
+
+O contrato do login deve estar no OpenAPI/documentação ou ser observado em uma
+execução real do login web. O agente não presume endpoint, nomes de campos,
+localização do token nem esquema do header de autorização.
 
 Exemplo com arquivo:
 
@@ -234,17 +248,35 @@ Subagents têm contexto isolado. O QA Master sempre deve passar explicitamente o
 task e os resultados anteriores necessários. O fingerprint no estado evita
 trabalho duplicado.
 
-## Credenciais
+## Skills e credenciais
 
-Não coloque senha, token ou cookie no task, Git ou relatório. Há três modos:
+As skills do projeto aparecem em **Customize → Skills** e no `/` do chat:
+
+- `/qa-web-testing` — orquestra o fluxo completo de QA.
+- `/api-password-login` — login de API com e-mail e senha, sem token em env.
+
+Elas mantêm o Agent principal como QA Master e usam os subagents
+especializados do workspace. `AGENTS.md` lista as mesmas skills.
+
+Não coloque senha, token ou cookie no task, Git ou relatório. Há quatro modos:
 
 1. sessão já autenticada no browser controlado pelo MCP;
 2. login manual quando o QA Master pausar e solicitar;
-3. email e senha por ambiente no `.env.qa`.
+3. login por email e senha do ambiente no `.env.qa`;
+4. autenticação não necessária.
 
 O `.env.qa` já foi criado e está ignorado pelo Git. Preencha somente as chaves
 do ambiente usado. O executor não usa credenciais de outro ambiente como
 fallback e não deve copiá-las para estado, relatório ou evidências.
+
+Nos testes diretos de API, o executor **não pede token**. Ele usa e-mail e
+senha do ambiente, chama o endpoint de login verificado e o helper
+`.cursor/skills/api-password-login/scripts/api-password-login.mjs` aplica o
+token só em memória. O token não é lido de variável de ambiente, não é
+compartilhado entre subagents e não é persistido. Se o contrato do login não
+puder ser comprovado, capture o login web primeiro ou use `BLOCKED`; não
+adivinhe campos nem endpoints. Email, senha e token não aparecem na linha de
+comando nem no JSON sanitizado do cenário.
 
 Limitação: no modo env, Cursor e Playwright precisam consumir a credencial para
 preencher o formulário; ela pode passar pelo contexto da ferramenta. Para

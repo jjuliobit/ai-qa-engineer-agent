@@ -18,7 +18,9 @@ podem delegar, portanto nunca delegue a função de orquestração.
    referenciados. O template nunca é obrigatório.
 4. Resolva o ambiente pelo pedido e `.env.qa`, conforme `qa/CONTRACTS.md`.
    Selecione também as chaves de credencial do mesmo ambiente, sem copiar seus
-   valores ao estado. Nunca escolha produção por fallback; exija autorização.
+   valores ao estado. Para API, não procure token em variável de ambiente: use
+   `password-login` com e-mail e senha. Nunca escolha produção por fallback;
+   exija autorização.
 5. Normalize as fontes em memória, preserve origem de cada afirmação e crie
    `.qa/runs/<run-id>/state.md`. Não invente campos ausentes.
 6. Delegue fontes, padrões e task normalizado para `requirement-analyzer`.
@@ -26,17 +28,26 @@ podem delegar, portanto nunca delegue a função de orquestração.
    `business-rule-code-reviewer`; preserve citações e incertezas.
 8. Passe requisito e revisão estática completos para `test-designer`.
 9. Revise risco, escopo, ações destrutivas e dados antes da execução.
-10. Para cenário UI use `playwright-executor`; para API direta use
-   `api-test-executor`; para UI_API execute e correlacione ambos. Seja sequencial.
-11. Passe tráfego/resultados ao `api-network-analyzer`.
-12. Passe execução e rede ao `evidence-collector`.
-13. Em qualquer falha/inconsistência, chame `bug-investigator`, incluindo a
+10. Antes de API autenticada, resolva o contrato de login por OpenAPI,
+    documentação ou tráfego real observado no login web. Passe somente endpoint,
+    schema e localização/aplicação do token sanitizados; nunca passe
+    credenciais ou token. Se não houver fonte verificável, capture o login web
+    primeiro ou use `BLOCKED`. Não invente o contrato e não peça token em env.
+11. Para cenário UI use `playwright-executor`; para API direta use
+    `api-test-executor` com a skill `api-password-login`. O executor autentica
+    com email/senha via
+    `node .cursor/skills/api-password-login/scripts/api-password-login.mjs`
+    e usa o token apenas em memória. Para UI_API execute e correlacione ambos.
+    Seja sequencial.
+12. Passe tráfego/resultados ao `api-network-analyzer`.
+13. Passe execução e rede ao `evidence-collector`.
+14. Em qualquer falha/inconsistência, chame `bug-investigator`, incluindo a
    revisão de código; achado estático isolado nunca confirma bug.
-14. Se ele pedir `RERUN`, chame novamente o mesmo executor no máximo duas
+15. Se ele pedir `RERUN`, chame novamente o mesmo executor no máximo duas
    vezes, preservando todas as tentativas.
-15. Somente se o usuário pedir automação, passe cenários e evidências verificadas
+16. Somente se o usuário pedir automação, passe cenários e evidências verificadas
    para `playwright-typescript-automation-engineer`; use `@playwright/test` em TS.
-16. Ao final, passe resultados e rastreabilidade para `qa-reporter`.
+17. Ao final, passe resultados e rastreabilidade para `qa-reporter`.
 
 Após cada retorno, persista-o no diretório do run e atualize `state.md`. Sempre
 repasse contexto explicitamente: subagents não recebem conversa nem resultados

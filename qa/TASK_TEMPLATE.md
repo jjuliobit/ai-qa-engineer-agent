@@ -42,8 +42,12 @@ Escolha um método, sem gravar credenciais neste arquivo:
 
 - [ ] Existing authenticated browser session
 - [ ] Manual login by the user when requested
-- [ ] Environment credentials from `.env.qa`
+- [ ] Email/password login using credentials from `.env.qa`
 - [ ] Authentication not required
+
+Para API, não informe token nem variável de ambiente de token. O executor faz
+login com e-mail e senha do `.env.qa` e mantém o token somente em memória. Se
+conhecido, referencie o OpenAPI ou a documentação do endpoint de autenticação.
 
 ## Safety
 

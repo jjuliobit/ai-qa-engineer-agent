@@ -45,7 +45,6 @@ QA_TEST_EMAIL_<AMBIENTE>=...
 QA_TEST_PASSWORD_<AMBIENTE>=...
 QA_ALLOW_PRODUCTION=false
 QA_ALLOW_API_WRITES=false
-QA_API_TOKEN_ENV=NOME_DA_VARIAVEL_DO_SISTEMA
 ```
 
 O ambiente informado no pedido tem precedência sobre `QA_TARGET_ENV`. Depois,
@@ -54,14 +53,25 @@ arquivo deve ser confirmada; não faça fallback silencioso entre ambientes.
 
 `production` exige ambiente explicitamente pedido e
 `QA_ALLOW_PRODUCTION=true`. Operações API diferentes de GET/HEAD/OPTIONS também
-exigem `QA_ALLOW_API_WRITES=true` e aprovação específica no pedido. O nome em
-`QA_API_TOKEN_ENV` é uma referência; nunca leia ou persista o valor no estado.
+exigem `QA_ALLOW_API_WRITES=true` e aprovação específica no pedido. A única
+exceção é a requisição de autenticação no modo `password-login`: ela pode usar
+POST sem habilitar escritas de negócio quando o contrato real a identificar
+explicitamente como login e a origem estiver autorizada.
 
-Para login web, selecione email e senha pelo mesmo sufixo do ambiente. Não use
-credencial de outro ambiente como fallback. O QA Master registra somente os
-nomes das chaves; o `playwright-executor` lê os valores no momento do login e
-nunca os retorna. Chave vazia, MFA ou captcha requer login manual e `BLOCKED`
-até a intervenção.
+Para login web ou de API, selecione email e senha pelo mesmo sufixo do
+ambiente. Não use credencial de outro ambiente como fallback. O QA Master
+registra somente os nomes das chaves; o executor lê os valores no momento do
+login e nunca os retorna.
+
+No modo `password-login`, o token de API não é configuração de entrada e não
+pode existir como variável de ambiente. Não há `QA_API_TOKEN` nem equivalente.
+O `api-test-executor` autentica com email e senha via
+`node .cursor/skills/api-password-login/scripts/api-password-login.mjs`,
+extrai o token conforme um contrato de login verificado e o helper o mantém
+somente em memória até terminar o cenário. O contrato deve vir de OpenAPI,
+documentação ou request/response real observado no login web e informar método,
+endpoint, campos de credencial e localização do token. Nunca invente esses dados.
+Contrato ausente, chave vazia, MFA ou captcha requer login manual ou `BLOCKED`.
 
 ## Envelope de entrada
 
@@ -98,10 +108,23 @@ O QA Master deve passar a cada subagent somente o contexto necessário:
       "source": ".env.qa",
       "allow_production": false,
       "allow_api_writes": false,
-      "api_token_env": "QA_API_TOKEN_HOMOLOG",
-      "credential_mode": "env",
+      "credential_mode": "password-login",
       "email_key": "QA_TEST_EMAIL_HOMOLOG",
-      "password_key": "QA_TEST_PASSWORD_HOMOLOG"
+      "password_key": "QA_TEST_PASSWORD_HOMOLOG",
+      "api_login_contract": {
+        "source_id": "openapi:auth-operation ou runtime:login-request",
+        "method": "POST",
+        "path": "valor realmente verificado",
+        "content_type": "valor realmente verificado",
+        "email_field": "valor realmente verificado",
+        "password_field": "valor realmente verificado",
+        "token_pointer": "valor realmente verificado",
+        "token_transport": {
+          "location": "header | cookie",
+          "name": "valor realmente verificado",
+          "scheme": "valor verificado ou null"
+        }
+      }
     },
     "profile": "...",
     "documentation": [],
@@ -123,8 +146,10 @@ No task canônico, use `REQUIREMENT NOT DEFINED` somente quando o contrato do
 subagent exigir string; não suponha o valor.
 
 Não inclua valores de credenciais no envelope. Informe somente o método
-autorizado: `existing-session`, `manual-login`, `env` ou `not-available`, mais
-os nomes das chaves quando o método for `env`.
+autorizado: `existing-session`, `manual-login`, `password-login`,
+`not-required` ou `not-available`, mais os nomes das chaves quando o método for
+`password-login`. `api_login_contract` é omitido enquanto não houver fonte real;
+valores do exemplo acima são marcadores, não defaults.
 
 ## Envelope de saída
 
